@@ -1,11 +1,11 @@
 import React from "react";
 import ReactMarkdown from "react-markdown";
 
-const ClaudeRecette = ({ content }) => {
+const ClaudeRecette = ({ content, scrollRef }) => {
   if (!content) return null;
 
   return (
-    <section className="my-8 px-4">
+    <section ref={scrollRef} className="my-8 px-4">
       <h2 className="text-xl font-bold mb-6 text-center">
         👨‍🍳 Chef Claude recommande :
       </h2>

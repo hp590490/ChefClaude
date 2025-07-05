@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import IngredientsList from "./IngredientsList";
 import ClaudeRecette from "./ClaudeRecette";
 
@@ -8,6 +8,7 @@ const Main = () => {
   const [showRecette, setShowRecette] = useState(false);
   const [generatedRecipe, setGeneratedRecipe] = useState(""); // contenu de la recette qui va s'afficher
   const [loading, setLoading] = useState(false);
+  const recetteRef = useRef(null);
 
   const addIngredient = (e) => {
     e.preventDefault();
@@ -60,6 +61,9 @@ const Main = () => {
 
       const data = await res.json();
       setGeneratedRecipe(data.choices[0].message.content);
+      setTimeout(() => {
+        recetteRef.current?.scrollIntoView({ behavior: "smooth" });
+      }, 100);
     } catch (error) {
       console.error("Erreur GPT :", error);
       setGeneratedRecipe("❌ Une erreur est survenue. Réessaie plus tard.");
@@ -71,8 +75,8 @@ const Main = () => {
   return (
     <main className="py-10 px-16 pb-10">
       <form
-        className="flex justify-center gap-12 h-[38px]"
         onSubmit={addIngredient}
+        className="flex flex-col sm:flex-row justify-center gap-4 sm:gap-12 px-2"
       >
         <input
           type="text"
@@ -81,19 +85,20 @@ const Main = () => {
           name="ingredient"
           value={newIngredient}
           onChange={(e) => setNewIngredient(e.target.value)}
-          className="rounded-lg border-2 border-solid border-[#D1D5DB] py-2 px-4 w-[300px] shadow-sm min-w-[150px] max-w-[400px]"
+          className="rounded-lg border-2 border-[#D1D5DB] py-2 px-4 w-full sm:w-[300px] shadow-sm"
         />
         <button
           className="bg-[#141413] text-white 
-             border border-transparent 
-             hover:bg-white hover:text-[#141413] 
-             hover:border-[#141413] 
-             px-5 py-2 rounded-md text-sm font-medium 
-             transition-colors duration-300 ease-in-out"
+      border border-transparent 
+      hover:bg-white hover:text-[#141413] 
+      hover:border-[#141413] 
+      px-5 py-2 rounded-md text-sm font-medium 
+      transition-colors duration-300 ease-in-out"
         >
           + Ajouter un ingrédient
         </button>
       </form>
+
       {ingredients.length < 4 && (
         <p className="text-center mt-4 text-xs italic">
           Ajoutez {4 - ingredients.length} ingrédients et générez une recette !
@@ -114,7 +119,7 @@ const Main = () => {
       )}
 
       {showRecette && generatedRecipe && (
-        <ClaudeRecette content={generatedRecipe} />
+        <ClaudeRecette content={generatedRecipe} scrollRef={recetteRef} />
       )}
     </main>
   );
